@@ -18,8 +18,32 @@ if (command == "spotify-this-song" && search.length === 0) {
 if (command == "movie-this" && search.length === 0) {
     search.push("Mr. Nobody");
 }
+if (command == "do-what-it-says") {
+        fs.readFile('random.txt','utf8', function(err,data) {
+            if (err) return console.log(`Error: ${err}`);
+            var dataArr = data.split(',');
+            search.push(dataArr[1]);
+            spotifySong(search);
+        })
+}
 
-var joinedSearch = search.join(" ");
+function spotifySong (search) {
+    spotify.search({type: 'track', query: search, limit: 10}, function(err, data) {
+        if (err) return console.log(`Error: ${err}`);
+        let songInfo = data.tracks.items;
+        
+        for(let i = 0; i < 10; i++) {
+            console.log(`
+Artist: ${songInfo[i].artists[0].name}
+Song: ${songInfo[i].name}
+Link: ${songInfo[i].href}
+Album: ${songInfo[i].album.name}
+`);
+        }
+    });
+}
+
+const joinedSearch = search.join(" ");
 
 switch (command) {
     case "concert-this" :
@@ -36,19 +60,7 @@ switch (command) {
         });
         break;
     case "spotify-this-song":
-        spotify.search({type: 'track', query: joinedSearch, limit: 10}, function(err, data) {
-            if (err) return console.log(`Error: ${err}`);
-            let songInfo = data.tracks.items;
-            
-            for(let i = 0; i < 10; i++) {
-                console.log(`
-    Artist: ${songInfo[i].artists[0].name}
-    Song: ${songInfo[i].name}
-    Link: ${songInfo[i].href}
-    Album: ${songInfo[i].album.name}
-    `);
-            }
-        });
+        spotifySong(joinedSearch);
         break;
     case "movie-this":
         let movieURL = `https://www.omdbapi.com/?t=${joinedSearch}&apikey=trilogy`;
