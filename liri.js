@@ -23,8 +23,8 @@ var joinedSearch = search.join(" ");
 
 switch (command) {
     case "concert-this" :
-        let URL = `https://rest.bandsintown.com/artists/${joinedSearch}/events?app_id=codingbootcamp`;
-        axios.get(URL).then(function(response) {
+        let concertURL = `https://rest.bandsintown.com/artists/${joinedSearch}/events?app_id=codingbootcamp`;
+        axios.get(concertURL).then(function(response) {
             let bandEvent = response.data;
             for(let i = 0; i < 10; i++) {
                 console.log(`
@@ -48,6 +48,22 @@ switch (command) {
     Album: ${songInfo[i].album.name}
     `);
             }
+        });
+        break;
+    case "movie-this":
+        let movieURL = `https://www.omdbapi.com/?t=${joinedSearch}&apikey=trilogy`;
+        axios.get(movieURL).then(function(response) {
+            let movieInfo = response.data;
+            console.log(`
+    Title: ${movieInfo.Title}
+    Year: ${movieInfo.Year}
+    IMDB Rating: ${movieInfo.imdbRating}
+    Rotten Tomatoes Rating: ${movieInfo.Ratings[1].Value}
+    Produced: ${movieInfo.Country}
+    Language: ${movieInfo.Language}
+    Plot: ${movieInfo.Plot}
+    Actors: ${movieInfo.Actors}
+    `);
         });
         break;
 }
